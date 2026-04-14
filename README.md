@@ -16,32 +16,35 @@ The project is structured for clarity, extensibility, and real‑world engineeri
 
 llm_spam_classifier/
 │
-├── run_everything_standalone.py     # End‑to‑end pipeline runner
+├── run_everything_standalone.py        # End‑to‑end pipeline runner
 │
 ├── data_prep/
-│   ├── prepare_data.py              # Download, balance, split dataset
+│   ├── prepare_data.py                 # Download, balance, split dataset
 │
 ├── dataset/
-│   ├── dataset.py                   # SpamDataset class
+│   ├── dataset.py                      # SpamDataset class
 │
 ├── llm_config/
-│   ├── config.py                    # GPT‑2 model configs
+│   ├── config.py                       # GPT‑2 model configs
 │
 ├── llm_model/
 │   ├── transformerBlock.py
 │   ├── layerNorm.py
 │
 ├── llm_training/
-│   ├── train_classifier.py          # Training loop (future)
+│   ├── train_classifier.py             # Training loop (future)
 │
 ├── llm_inference/
-│   ├── generate.py                  # Text generation utilities
+│   ├── generate.py                     # Text generation utilities
 │
 ├── load_pre_trained_weight/
-│   ├── gpt_download3.py             # GPT‑2 weight downloader
-│   ├── load_weight.py               # Load pretrained GPT‑2 weights
+│   ├── gpt_download3.py                # GPT‑2 weight downloader
+│   ├── load_weight.py                  # Load pretrained GPT‑2 weights
 │
-└── data/                            # Generated dataset splits
+├── data/                               # Generated dataset splits
+│
+└── README.md                           # Project documentation
+
 
 
 ---
