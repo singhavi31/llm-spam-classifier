@@ -9,11 +9,11 @@ import tiktoken
 
 # from .inference.run_generation import run_generation
 from .dataset.dataset import SpamDataset
-from .llm_inference.inference import classify_review
+from .inference.inference import classify_review
 from .load_pre_trained_weight.load_weight import load_gpt2_backbone
-from .llm_finetuning.model_finetune import prepare_model_for_classification
+from .finetuning.model_finetune import prepare_model_for_classification
 from .data_prep.create_dataset import create_balanced_dataset, random_split
-from .llm_training.train_classifier import train_classifier_simple
+from .training.train_classifier import train_classifier_simple
 from .data_prep.download_spam_dataset import download_and_unzip_spam_data
 
 

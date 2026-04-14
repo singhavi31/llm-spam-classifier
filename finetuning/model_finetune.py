@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from ..llm_config.config import BASE_CONFIG
+from ..config.config import BASE_CONFIG
 
 
 def prepare_model_for_classification(model, num_classes=2):

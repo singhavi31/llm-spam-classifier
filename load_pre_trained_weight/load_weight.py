@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from ..llm_config.config import BASE_CONFIG, MODEL_CONFIGS
-from ..llm_model.gptModel import GPTModel
+from ..config.config import BASE_CONFIG, MODEL_CONFIGS
+from ..gpt_model.gptModel import GPTModel
 from ..load_pre_trained_weight.gpt_download3 import download_and_load_gpt2
 
 
