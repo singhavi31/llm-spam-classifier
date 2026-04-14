@@ -1,109 +1,140 @@
-# LLM Project — GPT‑2 Spam Classification & Text Generation
+# LLM Spam Classifier — GPT‑2 Spam Detection & Text Generation
 
-This project provides a clean, modular, production‑ready structure for:
+A modular, production‑ready project for:
 
-- Preparing the SMS Spam dataset  
-- Building and loading a GPT‑2 model from scratch  
-- Loading pretrained GPT‑2 weights  
-- Running text generation  
-- Preparing for future fine‑tuning and training  
+- Creating and balancing the SMS Spam dataset
+- Building GPT‑2 from scratch
+- Loading pretrained GPT‑2 weights
+- Running text generation
+- Preparing for future fine‑tuning and classifier training
 
-Training logic is intentionally not included yet — the project is structured so it can be added later without breaking anything.
+The project is structured for clarity, extensibility, and real‑world engineering workflows.
 
 ---
 
 ## 📁 Project Structure
 
-llm_project/
+llm_spam_classifier/
 │
-├── all_run.py                     # Master script (run any part of the pipeline)
+├── run_everything_standalone.py     # End‑to‑end pipeline runner
 │
 ├── data_prep/
-│   ├── prepare_data.py            # Download, balance, split dataset
+│   ├── prepare_data.py              # Download, balance, split dataset
 │
-├── model_setup/
-│   ├── load_model.py              # Build GPT-2 model + load pretrained weights
+├── dataset/
+│   ├── dataset.py                   # SpamDataset class
 │
-├── training/
-│   ├── run_training.py            # Placeholder for future training loop
+├── llm_config/
+│   ├── config.py                    # GPT‑2 model configs
 │
-├── inference/
-│   ├── run_generation.py          # Text generation using GPT-2
-│
-├── llm_finetuning/
-│   ├── preprocessing.py           # Balancing + splitting logic
-│   ├── dataset.py                 # SpamDataset class
-│   ├── config.py                  # GPT-2 configs
-│   ├── model_loader.py            # GPTModel + weight loading
-│   ├── generate.py                # Text generation utilities
-│
-├── llm_scratch/
+├── llm_model/
 │   ├── transformerBlock.py
 │   ├── layerNorm.py
 │
-├── scripts/
-│   ├── download_spam_dataset.py   # Download + unzip UCI SMS Spam dataset
+├── llm_training/
+│   ├── train_classifier.py          # Training loop (future)
 │
-└── gpt_download3.py               # GPT-2 weight downloader
+├── llm_inference/
+│   ├── generate.py                  # Text generation utilities
+│
+├── load_pre_trained_weight/
+│   ├── gpt_download3.py             # GPT‑2 weight downloader
+│   ├── load_weight.py               # Load pretrained GPT‑2 weights
+│
+└── data/                            # Generated dataset splits
 
+
+---
+
+## ⭐ Dataset Creation (High‑Level Summary)
+
+### 1. Loads the SMS Spam Collection dataset
+- Reads the extracted TSV file (`SMSSpamCollection.tsv`)
+- Correct tab‑separated parsing
+- Assigns proper column names: **Label**, **Text**
+
+### 2. Balances the dataset
+- Undersamples majority class (**ham**)
+- Produces a perfectly balanced dataset: **747 ham / 747 spam**
+- Ensures stable classifier training
+
+### 3. Converts labels
+- `"ham"` → **0**
+- `"spam"` → **1**
+- Matches the classifier’s 2‑class output head
+
+### 4. Splits into train / validation / test
+- Uses `random_split()`
+- **70%** train
+- **10%** validation
+- **20%** test
+- Ensures clean evaluation
+
+### 5. Saves dataset splits
+- Creates `data/` folder if missing
+- Saves:
+  - `data/train.csv`
+  - `data/validation.csv`
+  - `data/test.csv`
+
+---
+
+## ⭐ Dataset Loading & Dataloader Pipeline
+
+### 6. GPT‑2 Tokenization
+- Converts each message into token IDs
+- No cleaning — raw text preserved
+- Captures real spam patterns (`WINNER`, `$1000`, `FREE`, etc.)
+
+### 7. Computes max sequence length
+- Automatically finds longest message
+- Prints `max_length`
+- Ensures consistent padding
+
+### 8. Pads all sequences
+- Uses GPT‑2 pad token (**50256**)
+- Produces uniform shape: `[batch_size, max_length]`
+- Required for batching + GPU efficiency
+
+### 9. Creates PyTorch dataloaders
+- Train / validation / test loaders
+- Correct batch sizes
+- Shuffling enabled for training
+- Yields tensors with correct shapes
+
+---
+
+## ⭐ GPT‑2 Backbone Loading
+
+### 10. Loads pretrained GPT‑2 backbone
+- Loads GPT‑2 small architecture
+- Restores pretrained weights
+- Embeddings, positional embeddings, transformer blocks restored
+- Prints **"Backbone loaded successfully."**
+
+### 11. Saves pretrained backbone
+- Saves to `gpt2_backbone.pth`
+- Ensures reproducibility
+- Enables fast reloads
+- Avoids repeated downloads
+
+---
+
+## ⭐ Text Generation
+
+### 12. GPT‑2 Generation
+- Tokenizes prompt
+- Performs autoregressive generation
+- Produces coherent GPT‑2 output
+- Confirms backbone functionality before fine‑tuning
+
+---
+
+## 🚀 Running the Full Pipeline
 
 ### Run everything (data prep → model loading → generation)
-<!-- This will:
-Download the dataset
-Prepare balanced train/val/test splits
-Build datasets + dataloaders
-Load GPT‑2 model + pretrained weights
-Generate text -->
+
+From the parent directory:
 
 ```bash
-python -m llm_project.all_run
-
-
-# Using all_run.py
-# Inside all_run.py, you can toggle each step:
-RUN_DATA_DOWNLOAD = True
-RUN_DATA_PREP = True
-RUN_DATALOADERS = True
-RUN_MODEL_LOADING = True
-RUN_GENERATION = True
-
-# Example: Only run model loading + generation
-RUN_DATA_DOWNLOAD = False
-RUN_DATA_PREP = False
-RUN_DATALOADERS = False
-RUN_MODEL_LOADING = True
-RUN_GENERATION = True
-
-# Example: Only prepare data
-RUN_DATA_DOWNLOAD = True
-RUN_DATA_PREP = True
-RUN_DATALOADERS = False
-RUN_MODEL_LOADING = False
-RUN_GENERATION = False
-
-📦 What Each Module Does
-data_prep/
-Handles dataset preparation:
-Download ZIP
-Extract
-Balance ham/spam
-Split into train/val/test
-Save CSVs
-model_setup/
-Builds GPT‑2 architecture and loads pretrained weights.
-llm_finetuning/
-Reusable components:
-Dataset class
-Preprocessing utilities
-GPT‑2 configs
-GPT‑2 model loader
-Text generation utilities
-inference/
-Runs text generation using GPT‑2.
-training/
-Placeholder for your future training loop.
-
-# below will load the model in memory and then we run only the text generation
-#python -m llm_project.repl_generate
-
-# python -m llm_project.run_all --generate --prompt "Write a motivational quote" --tokens 40 --temp 0.8
+python -m llm_spam_classifier.run_everything_standalone
